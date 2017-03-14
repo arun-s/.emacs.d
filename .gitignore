@@ -3,3 +3,8 @@
 
 # Packaging
 .cask
+
+elpa
+auto-save-list
+
+myinit.el

@@ -1,0 +1,156 @@
+* Healine
+ -------------------------------------------------------------------------
+ init.el -- my personnal Emacs Init File
+           see http://github.com/arun-s/emacs-config
+
+ Copyright (c) 2003-2017 Arun Sivakumaran <aruns@outlook.com>
+
+ Author       : Arun Sivakumaran
+ Email        : aruns@outlook.com
+ Date Started : 11/13/2004
+ Last Updated : 03/09/2017
+ -------------------------------------------------------------------------
+
+    ___ _ __ ___   __ _  ___ ___
+   / _ \ '_ ` _ \ / _` |/ __/ __|
+  |  __/ | | | | | (_| | (__\__ \
+ (_)___|_| |_| |_|\__,_|\___|___/
+
+
+ -------------------------------------------------------------------------
+ This file is NOT part of GNU Emacs.
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ -------------------------------------------------------------------------
+
+ Resources:
+  Gurmeet Singh Manku @ http://www-db.stanford.edu/~manku/dotemacs.html
+  Sebastien Varrette @ http://github.com/Falkor/emacs-config
+  http://www.jurta.org/emacs/dotemacs.en.html
+
+ -------------------------------------------------------------------------
+
+* Initial Setup
+
+** Load Paths
+#+BEGIN_SRC emacs-lisp
+(setq load-path (cons "~/.emacs.d/site-lisp/" load-path))
+(setq load-path (cons "~/.emacs.d/config/" load-path))
+
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/"))
+#+END_SRC
+
+** Setup Use Package
+#+BEGIN_SRC emacs-lisp :tangle yes
+;(add-to-list 'load-path "~/elisp")
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+(setq use-package-verbose t)
+(setq use-package-always-ensure t)
+(require 'use-package)
+;(use-package auto-compile
+;  :config (auto-compile-on-load-mode))
+;(setq load-prefer-newer t)
+#+END_SRC
+
+** Tweaks
+#+BEGIN_SRC emacs-lisp
+(setq indent-tabs-mode -1)
+(setq tab-width 2)
+(setq tab-stop-list (number-sequence 2 200 2))
+
+(setq blink-cursor-mode -1)
+(setq column-number-mode t)
+(setq major-mode (quote c-mode))
+(setq global-font-lock-mode t)
+(setq kill-whole-line t)
+(setq next-line-add-newlines -1)
+(setq nxml-child-indent 2)
+(setq query-replace-highlight t)
+(setq scroll-conservatively 5)
+(setq scroll-step 1)
+(setq search-highlight t)
+(setq transient-mark-mode t)
+
+;; Turn off mouse interface early in startup
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+
+;; No splash screen
+(setq inhibit-splash-screen t)
+
+;; Use "y or n" answers instead of full words "yes or no"
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; colomn limit to be 80
+(setq-default fill-column 80)
+
+;;prevent emacs from splitting windows
+(setq split-height-threshold 2000)
+(setq split-width-threshold 1200)
+
+;; Stop Emacs from splitting "frames", encourage it to pop up new
+; frames for new content.
+; see: http://www.gnu.org/software/emacs/elisp/html_node/Choosing-Window.html
+(setq pop-up-frames nil)
+(setq special-display-popup-frame nil)
+(setq split-window-preferred-function nil) ;discourage horizontal splits
+(setq pop-up-windows nil)
+
+;; TODO: fix this
+;(add-to-list 'display-buffer-alist '("[ ]?[*][^*]+[*]". ((display-special-buffer))))
+;(add-to-list 'display-buffer-alist '("COMMIT_EDITMSG". ((display-special-buffer))))
+
+(add-hook 'write-file-hooks 'delete-trailing-whitespace)
+
+#+END_SRC
+
+* Core Packages
+** Multiple Cursors
+#+BEGIN_SRC emacs-lisp
+(use-package multiple-cursors
+ :ensure t
+ :bind (("C-c ." . mc/mark-next-like-this)
+        ("C->" . mc/mark-next-like-this)
+        ("C-c ," . mc/mark-previous-like-this)
+        ("C-<" . mc/mark-previous-like-this)
+        ("C-c C-l" . mc/mark-all-like-this))
+ :init
+ :config
+ )
+#+END_SRC
+
+* Org Mode
+
+** Bullets
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
+)
+#+END_SRC
+
+* Display
+
+** Themes
+#+BEGIN_SRC emacs-lisp
+(use-package color-theme)
+(use-package monokai-theme)
+(load-theme 'monokai t)
+#+END_SRC
