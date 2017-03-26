@@ -71,6 +71,7 @@
 #+BEGIN_SRC emacs-lisp
 (setq indent-tabs-mode -1)
 (setq tab-width 2)
+(setq-default tab-width 2)
 (setq tab-stop-list (number-sequence 2 200 2))
 
 (setq blink-cursor-mode -1)
@@ -118,8 +119,19 @@
 
 (add-hook 'write-file-hooks 'delete-trailing-whitespace)
 
+
+
 #+END_SRC
 
+** General Keybindings
+#+BEGIN_SRC emacs-lisp
+
+(global-set-key (kbd "RET") 'newline-and-indent)
+(global-set-key "\C-j" 'newline-and-indent)
+(global-set-key "\C-xg" 'goto-line)
+
+
+#+END_SRC
 * Core Packages
 ** Multiple Cursors
 #+BEGIN_SRC emacs-lisp
@@ -134,7 +146,22 @@
  :config
  )
 #+END_SRC
-
+** Ace Window
+#+BEGIN_SRC emacs-lisp
+(use-package ace-window
+ :ensure t
+ :bind (([remap other-window] . ace-window))
+ :init
+ :config
+  )
+#+END_SRC
+** TODO AutoComplete
+   keybinding is not working
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :ensure t
+  :config (add-hook 'prog-mode-hook 'company-mode))
+#+END_SRC
 * Org Mode
 
 ** Bullets
