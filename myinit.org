@@ -162,6 +162,13 @@
   :ensure t
   :config (add-hook 'prog-mode-hook 'company-mode))
 #+END_SRC
+
+** Powerline
+#+BEGIN_SRC emacs-lisp
+(use-package powerline
+  :config (powerline-default-theme))
+#+END_SRC
+
 * Org Mode
 
 ** Bullets
@@ -181,3 +188,5 @@
 (use-package monokai-theme)
 (load-theme 'monokai t)
 #+END_SRC
+
+* Temporary
