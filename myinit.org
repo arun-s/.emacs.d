@@ -1,4 +1,4 @@
-* Healine
+* Headline
  -------------------------------------------------------------------------
  init.el -- my personnal Emacs Init File
            see http://github.com/arun-s/emacs-config
