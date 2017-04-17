@@ -190,9 +190,42 @@
 #+END_SRC
 
 * Temporary
-#+BEGIN_SRC
+#+BEGIN_SRC emacs-lisp
 (use-package smartparens
   :ensure t
   :config)
+
+(use-package ivy :ensure t
+  :diminish ivy-mode
+  :init (setq projectile-completion-system 'ivy)
+  :bind
+  (:map ivy-mode-map ("C-'" . ivy-avy))
+  :config (progn (
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-height 13)
+  (setq ivy-initial-inputs-alist nil)
+  (setq ivy-count-format "%d/%d ")
+  (setq ivy-virtual-abbreviate 'full) ; Show the full virtual file paths
+  (setq ivy-extra-directories '("./")) ; default value: ("../" "./")
+  (setq ivy-wrap t)
+  (setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
+                (counsel-ag . ivy--regex-plus)
+                (counsel-grep-or-swiper . ivy--regex-plus)
+                (t . ivy--regex-fuzzy))))))
+
+(use-package swiper
+  :bind
+  (([remap isearch-forward]  . swiper)
+   ([remap isearch-backward] . swiper))
+  :config
+  (setq swiper-action-recenter t))
+
+(use-package counsel
+  :bind
+  (([remap execute-extended-command] . counsel-M-x)
+   ("s-P" . counsel-M-x))
+  :chords
+  (";f" . counsel-find-file))
 
 #+END_SRC
