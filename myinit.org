@@ -167,10 +167,23 @@
 #+BEGIN_SRC emacs-lisp
 (use-package powerline
   :config (powerline-default-theme))
+
+
+#+END_SRC
+
+** Highlight Symbol
+#+BEGIN_SRC emacs-lisp
+( use-package highlight-symbol
+   :ensure t
+   :bind (("C-<f3>" . highlight-symbol)
+          ("<f3>"   . highlight-symbol-next)
+          ("S-<f3>" . highlight-symbol-prev)
+          ("M-<f3>" . highlight-symbol-query-replace))
+   :config
+)
 #+END_SRC
 
 * Org Mode
-
 ** Bullets
 #+BEGIN_SRC emacs-lisp
 (use-package org-bullets
