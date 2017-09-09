@@ -40,9 +40,7 @@
   http://www.jurta.org/emacs/dotemacs.en.html
 
  -------------------------------------------------------------------------
-
 * Initial Setup
-
 ** Load Paths
 #+BEGIN_SRC emacs-lisp
 (setq load-path (cons "~/.emacs.d/site-lisp/" load-path))
@@ -110,16 +108,22 @@
 ; see: http://www.gnu.org/software/emacs/elisp/html_node/Choosing-Window.html
 (setq pop-up-frames nil)
 (setq special-display-popup-frame nil)
-(setq split-window-preferred-function nil) ;discourage horizontal splits
+;(setq split-window-preferred-function nil) ;discourage horizontal splits
 (setq pop-up-windows nil)
 
+	(defun display-special-buffer (buf alist)
+  "put the special buffers in the right spot (bottom rigt)"
+    (let ((target-window (window-at (- (frame-width) 4) (- (frame-height) 4)))
+          (pop-up-windows t))
+      (set-window-buffer target-window buf)
+      target-window))
+
+
 ;; TODO: fix this
-;(add-to-list 'display-buffer-alist '("[ ]?[*][^*]+[*]". ((display-special-buffer))))
-;(add-to-list 'display-buffer-alist '("COMMIT_EDITMSG". ((display-special-buffer))))
+(add-to-list 'display-buffer-alist '("[ ]?[*][^*]+[*]". ((display-special-buffer))))
+(add-to-list 'display-buffer-alist '("COMMIT_EDITMSG". ((display-special-buffer))))
 
 (add-hook 'write-file-hooks 'delete-trailing-whitespace)
-
-
 
 #+END_SRC
 
@@ -222,15 +226,29 @@
 #+END_SRC
 ** Capture Templates
 #+BEGIN_SRC emacs-lisp
+
+
 (setq org-directory "~/git/org")
 (setq org-default-notes-file "~/git/org/refile.org")
 
 ;; I use C-c c to start capture mode
 (global-set-key (kbd "C-c c") 'org-capture)
 
+(defvar my/org-basic-task-template "* TODO %^{Task}
+Captured %<%Y-%m-%d %H:%M>
+%?
+
+%i
+" "Basic task data")
+
+(defvar my/org-meeting-template
+ "* %^{Topic}\n** Attendees : %^{Attendees}\n** Date : %^T
+  %?
+" "Basic Meeting Info")
+
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (setq org-capture-templates
-      (quote (("t" "Tasks" entry
+      `(("t" "Tasks" entry
          (file+headline "~/orgfiles/refile.org" "Tasks")
          ,my/org-basic-task-template)
 
@@ -246,10 +264,10 @@
 
   ("m" "Meetings" entry
         (file+headline "~/orgfiles/refile.org" "Meetings")
-         "* MEETING with %? :MEETING:\n%U")
+         ,my/org-meeting-template)
 
 	("q" "Quick Note" item
-         (file+headline "~/orgfiles/refile.org" "Quick notes")))))
+         (file+headline "~/orgfiles/refile.org" "Quick notes"))))
 
 #+END_SRC
 ** Bullets
@@ -271,40 +289,44 @@
 
 * Temporary
 #+BEGIN_SRC emacs-lisp
-(use-package smartparens
-  :ensure t
-  :config)
-
-(use-package ivy :ensure t
-  :diminish ivy-mode
-  :init (setq projectile-completion-system 'ivy)
-  :bind
-  (:map ivy-mode-map ("C-'" . ivy-avy))
-  :config (progn (
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-height 13)
-  (setq ivy-initial-inputs-alist nil)
-  (setq ivy-count-format "%d/%d ")
-  (setq ivy-virtual-abbreviate 'full) ; Show the full virtual file paths
-  (setq ivy-extra-directories '("./")) ; default value: ("../" "./")
-  (setq ivy-wrap t)
-  (setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
-                (counsel-ag . ivy--regex-plus)
-                (counsel-grep-or-swiper . ivy--regex-plus)
-                (t . ivy--regex-fuzzy))))))
-
-(use-package swiper
-  :bind
-  (([remap isearch-forward]  . swiper)
-   ([remap isearch-backward] . swiper))
-  :config
-  (setq swiper-action-recenter t))
-
-(use-package counsel
-  :bind
-  (([remap execute-extended-command] . counsel-M-x)
-   ("s-P" . counsel-M-x)
-   ("C-f" . counsel-find-file)))
-
+;(use-package smartparens
+;  :ensure t
+;  :config)
+;
+;(use-package ivy :ensure t
+;  :diminish ivy-mode
+;  :init (setq projectile-completion-system 'ivy)
+;  :bind
+;  (:map ivy-mode-map ("C-'" . ivy-avy))
+;  :config (progn (
+;  (ivy-mode t)
+;  (setq ivy-use-virtual-buffers t)
+;  (setq ivy-height 13)
+;  (setq ivy-initial-inputs-alist nil)
+;  (setq ivy-count-format "%d/%d ")
+;  (setq ivy-virtual-abbreviate 'full) ; Show the full virtual file paths
+;  (setq ivy-extra-directories '("./")) ; default value: ("../" "./")
+;  (setq ivy-wrap t)
+;  (setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
+;                (counsel-ag . ivy--regex-plus)
+;                (counsel-grep-or-swiper . ivy--regex-plus)
+;                (t . ivy--regex-fuzzy))))))
+;
+;(use-package swiper
+;  :bind
+;  (([remap isearch-forward]  . swiper)
+;   ([remap isearch-backward] . swiper))
+;  :config
+;  (setq swiper-action-recenter t))
+;
+;(use-package counsel
+;  :bind
+;  (([remap execute-extended-command] . counsel-M-x)
+;   ("s-P" . counsel-M-x)
+;   ("C-f" . counsel-find-file)))
+;
+;(use-package yafolding
+;  :commands (yafolding-mode)
+;  :init (add-hook 'prog-mode-hook 'yafolding-mode))
+;
 #+END_SRC
