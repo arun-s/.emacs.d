@@ -32,7 +32,13 @@
   (call-interactively (nth (eval symbol) command-list))
   (setq this-command symbol))
 
-
+;; Check if current file is in CC mode and if so, delete trailing whitespace
+;;  and run untabify-file()
+(defun my-cc-mode-before-save-hook ()
+  (when c-buffer-is-cc-mode
+		(lambda()
+			(untabify-file)
+			(delete-trailing-whitespace))))
 
 ;; Define a function to toggle between different color settings
 (defun cycle-color-settings ()
@@ -84,7 +90,7 @@
       (matig-dont-ignore-whitespace)
     (magit-ignore-whitespace)))
 
-(defun matig-ignore-whitespace ()
+(defun magit-ignore-whitespace ()
   (interactive)
   (add-to-list 'magit-diff-options "-w")
   (magit-refresh))

@@ -44,7 +44,11 @@
 ** Load Paths
 #+BEGIN_SRC emacs-lisp
 (setq load-path (cons "~/.emacs.d/site-lisp/" load-path))
+(setq load-path (cons "~/.emacs.d/elisp/" load-path))
 (setq load-path (cons "~/.emacs.d/config/" load-path))
+(setq exec-path (cons "/usr/local/bin/" exec-path))
+
+(require 'defun)
 
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
@@ -123,8 +127,6 @@
 (add-to-list 'display-buffer-alist '("[ ]?[*][^*]+[*]". ((display-special-buffer))))
 (add-to-list 'display-buffer-alist '("COMMIT_EDITMSG". ((display-special-buffer))))
 
-(add-hook 'write-file-hooks 'delete-trailing-whitespace)
-
 #+END_SRC
 
 ** General Keybindings
@@ -174,6 +176,16 @@
 
 #+END_SRC
 
+** Rainbow Delimiters
+	 #+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+  :ensure t
+  :commands rainbow-delimiters-mode
+  :init
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+)
+
+	 #+END_SRC
 ** Highlight Symbol
 #+BEGIN_SRC emacs-lisp
 ( use-package highlight-symbol
@@ -181,9 +193,51 @@
    :bind (("C-<f3>" . highlight-symbol)
           ("<f3>"   . highlight-symbol-next)
           ("S-<f3>" . highlight-symbol-prev)
-          ("M-<f3>" . highlight-symbol-query-replace))
+          ("M-<f3>" . highlight-symbol-remove-all))
    :config
 )
+#+END_SRC
+
+** Expand Region
+#+BEGIN_SRC  emacs-lisp
+(use-package expand-region
+	 :ensure t
+   :bind (("C-=" . er/expand-region)
+          ("C-S-=" . er/contract-region))
+)
+#+END_SRC
+
+** Magit
+#+BEGIN_SRC emacs-lisp
+( use-package magit
+  :ensure t
+  :bind (("C-c m" . magit-status))
+)
+#+END_SRC
+
+** Exec Path
+	 #+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell
+  :ensure t
+  :config (exec-path-from-shell-initialize)
+)
+
+	 #+END_SRC
+
+* C-Mode
+#+BEGIN_SRC emacs-lisp
+(add-hook 'c-mode-common-hook
+          '(lambda ()
+;             (c-set-offset 'substatement-open 0)
+	     (setq fill-column 80)
+	     (setq comment-column 50)
+       (setq c-basic-offset 4)
+	     (setq tab-width 4)
+	     (setq indent-tabs-mode nil)
+	     (setq tab-stop-list (number-sequence 4 200 4))))
+
+(add-hook 'before-save-hook
+           #'my-cc-mode-before_save-hook)
 #+END_SRC
 
 * Org Mode
@@ -195,7 +249,7 @@
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 
-(setq org-agenda-files (quote ("~/git/orgfiles")))
+(setq org-agenda-files (quote ("~/orgfiles")))
 
 (setq org-blank-before-new-entry (quote ((heading . always) (plain-list-item . always))))
 
@@ -255,7 +309,7 @@ Captured %<%Y-%m-%d %H:%M>
 	("T" "Quick Task" entry
          (file+headline "~/orgfiles/refile.org" "Tasks")
          "* TODO %^{Task}"
-         :immediate-finish t)
+nn         :immediate-finish t)
 
 	("j" "Journal entry with date" plain
          (file+datetree+prompt "~/orgfiles/journal.org")
@@ -278,55 +332,117 @@ Captured %<%Y-%m-%d %H:%M>
   (add-hook 'org-mode-hook (lambda() (org-bullets-mode 1)))
 )
 #+END_SRC
+
+** Telephone Line
+	 #+BEGIN_SRC emacs-lisp
+;(use-package telephone-line
+;  :ensure t
+;  :config (telephone-line-mode t)
+;)
+
+
+	 #+END_SRC
 * Display
 
 ** Themes
 #+BEGIN_SRC emacs-lisp
+
 (use-package color-theme)
-(use-package monokai-theme)
-(load-theme 'monokai t)
+;(use-package monokai-theme
+; :init (progn (load-theme 'monokai t t)
+;              (enable-theme 'monokai))
+; :defer t
+; :ensure t)
+
+;(use-package ample-theme
+;  :init (progn (load-theme 'ample t t)
+;               (load-theme 'ample-flat t t)
+;               (load-theme 'ample-light t t)
+;               (enable-theme 'ample))
+;  :defer t
+;  :ensure t)
+;
+(use-package ample-zen-theme
+  :init (progn (load-theme 'ample-zen t t)
+                (enable-theme 'ample-zen))
+  :defer t
+  :ensure t)
 #+END_SRC
 
-* Temporary
+* WhichKey
 #+BEGIN_SRC emacs-lisp
-;(use-package smartparens
-;  :ensure t
-;  :config)
-;
-;(use-package ivy :ensure t
-;  :diminish ivy-mode
-;  :init (setq projectile-completion-system 'ivy)
-;  :bind
-;  (:map ivy-mode-map ("C-'" . ivy-avy))
-;  :config (progn (
-;  (ivy-mode t)
-;  (setq ivy-use-virtual-buffers t)
-;  (setq ivy-height 13)
-;  (setq ivy-initial-inputs-alist nil)
-;  (setq ivy-count-format "%d/%d ")
-;  (setq ivy-virtual-abbreviate 'full) ; Show the full virtual file paths
-;  (setq ivy-extra-directories '("./")) ; default value: ("../" "./")
-;  (setq ivy-wrap t)
-;  (setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
-;                (counsel-ag . ivy--regex-plus)
-;                (counsel-grep-or-swiper . ivy--regex-plus)
-;                (t . ivy--regex-fuzzy))))))
-;
-;(use-package swiper
-;  :bind
-;  (([remap isearch-forward]  . swiper)
-;   ([remap isearch-backward] . swiper))
-;  :config
-;  (setq swiper-action-recenter t))
-;
-;(use-package counsel
-;  :bind
-;  (([remap execute-extended-command] . counsel-M-x)
-;   ("s-P" . counsel-M-x)
-;   ("C-f" . counsel-find-file)))
-;
-;(use-package yafolding
-;  :commands (yafolding-mode)
-;  :init (add-hook 'prog-mode-hook 'yafolding-mode))
-;
+(use-package which-key
+  :ensure t
+  :config
+    (which-key-mode)
+)
+#+END_SRC
+
+* Swiper
+	#+BEGIN_SRC emacs-lisp
+(use-package swiper
+  :ensure t
+  :config
+  (progn
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (setq enable-recursive-minibuffers t)
+    (global-set-key "\C-s" 'swiper)
+    (global-set-key (kbd "C-c C-r") 'ivy-resume)
+    (global-set-key (kbd "<f6>") 'ivy-resume)
+    (global-set-key (kbd "M-x") 'counsel-M-x)
+    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+    (global-set-key (kbd "<f1> l") 'counsel-find-library)
+    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+    (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+  )
+)
+
+	#+END_SRC
+
+* Tagging
+#+BEGIN_SRC emacs-lisp
+(use-package ggtags
+  :ensure t
+  :defer t
+  :init
+    (add-hook 'c-mode-common-hook
+          (lambda ()
+            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+              (ggtags-mode 1))))
+)
+#+END_SRC
+* Projectile
+#+BEGIN_SRC emacs-lisp
+
+(use-package projectile
+  :ensure t
+  :config
+    (progn
+      (setq projectile-keymap-prefix (kbd "C-c p"))
+      (setq projectile-completion-system 'ivy)
+      (setq projectile-indexing-method 'alien)
+      (setq projectile-enable-caching t)
+      (projectile-global-mode)
+    )
+)
+
+(use-package counsel-projectile
+  :ensure t
+  :config
+    (counsel-projectile-mode)
+)
+#+END_SRC
+
+* Programming
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :ensure t
+  :init
+    (global-flycheck-mode t)
+)
+	
 #+END_SRC
